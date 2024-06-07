@@ -1,0 +1,37 @@
+#Ensures you do not inherit an AzContext in your runbook
+Disable-AzContextAutosave -Scope Process
+
+#Force files to be output in current folder
+$env:POSHACME_HOME = $pwd
+Import-Module Posh-ACME -Force
+
+#parameters
+$maindomain = ${cn}
+$sans = ${sans}
+$domains = @($maindomain;$sans)
+$subid = '${subid}'
+
+Set-PAServer ${ca}
+$paServer = (get-PaServer).name
+
+#Set Context
+az login --identity
+az account set -s $subid
+
+#Retrieve access token
+$token = (az account get-access-token --resource 'https://management.core.windows.net/' | ConvertFrom-Json).accessToken
+
+#Retrieve certificate password from keyvault
+$password = (az keyvault secret show --vault-name ${vault_name} -n posh-acme --query "value" -o tsv)
+
+#Issue certificate
+$pArgs = @{
+	AZSubscriptionId = $subid
+  AZAccessToken = $token
+}
+New-PACertificate $domains -AcceptTOS -Contact ${contact} -PfxPass $password -Plugin Azure -PluginArgs $pArgs
+
+#Import certificate to keyvault
+$paaccount = (Get-PAAccount | select-object id).id
+
+az keyvault certificate import --vault-name ${vault_name} -n ${secret_name} -f $pwd\$paServer\$paaccount\$maindomain\fullchain.pfx --password $password
