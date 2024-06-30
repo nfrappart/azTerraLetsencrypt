@@ -172,6 +172,11 @@ variable "certs" {
   }
 
   validation {
+    condition     = alltrue([for k, v in var.certs : length(v.sans) > 0 ])
+    error_message = "Certificate must have at least one alternate name (i.e. \"sans\" value can't be empty)."
+  }
+
+  validation {
     condition     = alltrue([for k, v in var.certs : startswith(v.cn, "'")]) && alltrue([for k, v in var.certs : endswith(v.sans, "'")])
     error_message = "Certificates SANS and CN must be between single quotes (e.g. \"'www.domain.tld'\")."
   }
