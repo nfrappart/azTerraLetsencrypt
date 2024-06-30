@@ -25,7 +25,8 @@ provider "azurerm" {
 }
 
 module "le" {
-  source = "../../Git/github/terraform-az-modules/azTerraLetsencrypt/"
+  source  = "ryzhom/letsencrypt/azurerm"
+  version = "0.1.0"
   aa_rg                 = "rg-test"
   location              = "francecentral"
   rg_tags               = {}
