@@ -66,12 +66,12 @@ variable "schedule_frequency" {
   default     = "Month"
 
   validation {
-    condition     = anytrue([ 
+    condition = anytrue([
       var.schedule_frequency == "Day",
       var.schedule_frequency == "Hour",
       var.schedule_frequency == "Month",
       var.schedule_frequency == "Week",
- 
+
     ])
     error_message = "Accepted values are \"Day\", \"Hour\", \"Month\", \"Week\"."
   }
@@ -157,23 +157,23 @@ variable "certs" {
   }))
 
   validation {
-    condition     = alltrue([ for k,v in var.certs : v.ca == "LE_STAGE" ]) || alltrue([ for k,v in var.certs : v.ca == "LE_PROD" ])
+    condition     = alltrue([for k, v in var.certs : v.ca == "LE_STAGE"]) || alltrue([for k, v in var.certs : v.ca == "LE_PROD"])
     error_message = "CA can only be \"LE_STAGE\" or \"LE_PROD\"."
   }
 
   validation {
-    condition     = alltrue([ for k,v in var.certs : endswith(trim(v.cn, "'"), v.dns_zone_name) ])
+    condition     = alltrue([for k, v in var.certs : endswith(trim(v.cn, "'"), v.dns_zone_name)])
     error_message = "Certificate CN must match DNS Zone Name."
   }
 
   validation {
-    condition     = alltrue([ for k,v in var.certs : endswith(trim(v.sans, "'"), v.dns_zone_name) ])
+    condition     = alltrue([for k, v in var.certs : endswith(trim(v.sans, "'"), v.dns_zone_name)])
     error_message = "Certificate SANS must match DNS Zone Name."
   }
 
   validation {
-    condition     = alltrue([ for k,v in var.certs : startswith(v.cn, "'")]) && alltrue([ for k,v in var.certs : endswith(v.sans, "'")])
-    error_message = "Certificates SANS and CN must be between single quotes (e.g. \"'www.domain.tld'\")."  
+    condition     = alltrue([for k, v in var.certs : startswith(v.cn, "'")]) && alltrue([for k, v in var.certs : endswith(v.sans, "'")])
+    error_message = "Certificates SANS and CN must be between single quotes (e.g. \"'www.domain.tld'\")."
   }
 }
 

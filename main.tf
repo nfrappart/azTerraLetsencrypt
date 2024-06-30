@@ -100,7 +100,7 @@ resource "azurerm_key_vault_secret" "posh_acme" {
   lifecycle {
     ignore_changes = [value]
   }
-  depends_on = [ azurerm_role_assignment.kv ] #local.check_role_dependency
+  depends_on = [azurerm_role_assignment.kv] #local.check_role_dependency
 }
 
 resource "azurerm_automation_runbook" "acme_le" {
